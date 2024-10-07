@@ -28,12 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-class MovieListSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = Movie
-        fields = ['id','movie_name','janre',
-                  'movie_image','status_movie']
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -68,6 +63,22 @@ class CountrySerializer(serializers.ModelSerializer):
         model = Country
         fields = ['country_name']
 
+
+class JanreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Janre
+        fields = ['janre_name']
+
+
+class MovieListSerializer(serializers.ModelSerializer):
+    country = CountrySerializer(many=True)
+    janre = JanreSerializer(many=True)
+    class Meta:
+        model = Movie
+        fields = ['id','movie_name','janre',
+                  'movie_image','status_movie','country']
+
+
 class DirectorListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Director
@@ -77,9 +88,10 @@ class DirectorListSerializer(serializers.ModelSerializer):
 
 
 class DirectorDetailSerializer(serializers.ModelSerializer):
+    director_movie = MovieListSerializer(many=True,read_only=True)
     class Meta:
         model = Director
-        fields = ['director_name','bio','age','director_image']
+        fields = ['director_name','bio','age','director_image','director_movie']
 
 
 
@@ -88,10 +100,6 @@ class ActorListSerializer(serializers.ModelSerializer):
         model = Actor
         fields = ['actor_name','actor_image']
 
-class JanreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Janre
-        fields = ['janre_name']
 
 
 class MoviefilmSerializer(serializers.ModelSerializer):
@@ -116,11 +124,17 @@ class MovieLanguagesSerializer(serializers.ModelSerializer):
         model = MovieLanguages
         fields = ['language','video']
 
+class MovimomentsNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ['movie_name']
+
 
 class MomentsSerializer(serializers.ModelSerializer):
+    movie = MovimomentsNameSerializer()
     class Meta:
         model = Moments
-        fields = ['movie','movie_moments']
+        fields = ['movie','movie_moments','movie']
 
 class RatingSerializer(serializers.ModelSerializer):
     user_rating = ProfileSerializer(many=True,read_only=True)
